@@ -37,6 +37,64 @@ type NullLseg pg.NullLseg
 type NullPolygon pg.NullPolygon
 
 //
+
+func NewPoint(Lat, Lng float64) Point {
+	return Point(pg.NewPoint(Lat, Lng))
+}
+
+func NewLine(A, B, C float64) Line {
+	return Line(pg.NewLine(A, B, C))
+}
+
+func NewLseg(A, B Point) Lseg {
+	return Lseg(pg.NewLseg(pg.Point(A), pg.Point(B)))
+}
+
+func NewBox(A, B Point) Box {
+	return Box(pg.NewBox(pg.Point(A), pg.Point(B)))
+}
+
+func NewPath(P []Point, C bool) Path {
+	return Path(pg.NewPath(convertPoints(P), C))
+}
+
+func NewPolygon(P []Point) Polygon {
+	return Polygon(pg.NewPolygon(convertPoints(P)))
+}
+
+func NewCircle(P Point, R float64) Circle {
+	return Circle(pg.NewCircle(pg.Point(P), R))
+}
+
+func NewNullPoint(P Point, v bool) NullPoint {
+	return NullPoint(pg.NewNullPoint(pg.Point(P), v))
+}
+
+func NewNullLine(L Line, v bool) NullLine {
+	return NullLine(pg.NewNullLine(pg.Line(L), v))
+}
+
+func NewNullLseg(L Lseg, v bool) NullLseg {
+	return NullLseg(pg.NewNullLseg(pg.Lseg(L), v))
+}
+
+func NewNullBox(B Box, v bool) NullBox {
+	return NullBox(pg.NewNullBox(pg.Box(B), v))
+}
+
+func NewNullPath(P Path, v bool) NullPath {
+	return NullPath(pg.NewNullPath(pg.Path(P), v))
+}
+
+func NewNullPolygon(P Polygon, v bool) NullPolygon {
+	return NullPolygon(pg.NewNullPolygon(pg.Polygon(P), v))
+}
+
+func NewNullCircle(C Circle, v bool) NullCircle {
+	return NullCircle(pg.NewNullCircle(pg.Circle(C), v))
+}
+
+//
 // Point:
 
 func (o Point) Value() (driver.Value, error) {
@@ -286,4 +344,19 @@ func (o *NullPolygon) Scan(src interface{}) error {
 
 func (o *NullPolygon) Randomize(seed *randomize.Seed, fieldType string, shouldBeNull bool) {
 	*o = NullPolygon(pg.NewNullPolygon(pg.NewRandPolygon(), !shouldBeNull))
+}
+
+//
+//
+//
+
+func convertPoints(Ps []Point) []pg.Point {
+	var points = []pg.Point{}
+	if Ps != nil {
+		for _, p := range Ps {
+			points = append(points, pg.Point(p))
+		}
+	}
+
+	return points
 }
