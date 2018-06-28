@@ -55,11 +55,11 @@ func NewBox(A, B Point) Box {
 }
 
 func NewPath(P []Point, C bool) Path {
-	return Path(pg.NewPath(convertPoints(P), C))
+	return Path(pg.NewPath(pointsToNative(P), C))
 }
 
 func NewPolygon(P []Point) Polygon {
-	return Polygon(pg.NewPolygon(convertPoints(P)))
+	return Polygon(pg.NewPolygon(pointsToNative(P)))
 }
 
 func NewCircle(P Point, R float64) Circle {
@@ -350,7 +350,7 @@ func (o *NullPolygon) Randomize(seed *randomize.Seed, fieldType string, shouldBe
 //
 //
 
-func convertPoints(Ps []Point) []pg.Point {
+func pointsToNative(Ps []Point) []pg.Point {
 	var points = []pg.Point{}
 	if Ps != nil {
 		for _, p := range Ps {
@@ -359,4 +359,37 @@ func convertPoints(Ps []Point) []pg.Point {
 	}
 
 	return points
+}
+
+func pointsFromNative(Ps []pg.Point) []Point {
+	var points = []Point{}
+	if Ps != nil {
+		for _, p := range Ps {
+			points = append(points, Point(p))
+		}
+	}
+
+	return points
+}
+
+//
+//
+//
+
+func UnmarshalPoint(pnt []byte) (Point, error) {
+	var Pnt, err = pg.UnmarshalPoint(pnt)
+	if err != nil {
+		return Point{}, err
+	}
+
+	return Point(Pnt), nil
+}
+
+func UnmarshalPoints(pnts []byte) ([]Point, error) {
+	var Pnts, err = pg.UnmarshalPoints(pnts)
+	if err != nil {
+		return []Point{}, err
+	}
+
+	return pointsFromNative(Pnts), nil
 }
